@@ -1,5 +1,7 @@
 import React from "react";
 
+import EmployeeService from "../services/employee.service";
+
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -8,7 +10,25 @@ import Table from "react-bootstrap/Table";
 
 import Button from "react-bootstrap/Button";
 
+import EmployeeTableEntry from "../components/EmployeeTableEntry";
+
 function Employees() {
+  const [employees, setEmployees] = React.useState<any[]>([]);
+
+  const getAllEmployees = () => {
+    EmployeeService.getEmployees()
+      .then((response) => {
+        setEmployees(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  React.useEffect(() => {
+    getAllEmployees();
+  }, []);
+
   return (
     <div>
       <div>
@@ -28,6 +48,7 @@ function Employees() {
               <Table>
                 <thead>
                   <tr>
+                    <th>ID</th>
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Email</th>
@@ -36,20 +57,16 @@ function Employees() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>johndoe@email.com</td>
-                    <td>CEO</td>
-                    <td className="d-flex justify-content-center gap-3">
-                      <Button variant="primary">
-                        <i className="bi bi-pencil-square"></i>
-                      </Button>
-                      <Button variant="danger">
-                        <i className="bi bi-trash" />
-                      </Button>
-                    </td>
-                  </tr>
+                  {employees.map((employee) => (
+                    <EmployeeTableEntry
+                      key={employee.id}
+                      id={employee.id}
+                      firstName={employee.firstName}
+                      lastName={employee.lastName}
+                      email={employee.email}
+                      role={employee.role}
+                    />
+                  ))}
                 </tbody>
               </Table>
             </Col>
